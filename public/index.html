@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot - Voice, Text & Image</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-robot"></i> AI Chatbot</h2>
+                <button id="new-chat-btn" class="new-chat-btn">
+                    <i class="fas fa-plus"></i> New Chat
+                </button>
+            </div>
+            
+            <div class="conversations-list" id="conversations-list">
+                <!-- Conversations will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-title">
+                    <h3 id="current-conversation-title">New Conversation</h3>
+                </div>
+                <div class="chat-actions">
+                    <button id="voice-btn" class="action-btn" title="Voice Message">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button id="image-btn" class="action-btn" title="Upload Image">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button id="delete-chat-btn" class="action-btn delete" title="Delete Chat">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Container -->
+            <div class="messages-container" id="messages-container">
+                <div class="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h2>Welcome to AI Chatbot</h2>
+                    <p>I can help you with text conversations, voice notes, and image analysis.</p>
+                    <div class="feature-cards">
+                        <div class="feature-card">
+                            <i class="fas fa-comments"></i>
+                            <h4>Text Chat</h4>
+                            <p>Ask me anything</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-microphone"></i>
+                            <h4>Voice Notes</h4>
+                            <p>Speak to me</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-image"></i>
+                            <h4>Image Analysis</h4>
+                            <p>Upload images for analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea 
+                        id="message-input" 
+                        placeholder="Type your message here..."
+                        rows="1"
+                    ></textarea>
+                    <div class="input-actions">
+                        <button id="send-btn" class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" id="image-input" accept="image/*" style="display: none;">
+    <input type="file" id="audio-input" accept="audio/*" style="display: none;">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <!-- Modal for image upload -->
+    <div id="image-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Image</h3>
+                <button class="close-btn" id="close-image-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="image-preview" id="image-preview">
+                    <i class="fas fa-image"></i>
+                    <p>Click to select an image</p>
+                </div>
+                <textarea 
+                    id="image-prompt" 
+                    placeholder="Describe what you want me to analyze in this image (optional)..."
+                    rows="3"
+                ></textarea>
+                <button id="analyze-image-btn" class="primary-btn">
+                    <i class="fas fa-search"></i> Analyze Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 
