@@ -1,7 +1,6 @@
 class ChatbotApp {
     constructor() {
         this.currentConversationId = null;
-        this.socket = null;
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.isRecording = false;
@@ -10,22 +9,27 @@ class ChatbotApp {
     }
 
     init() {
-        this.connectSocket();
+        this.checkServerHealth();
         this.loadConversations();
         this.bindEvents();
         this.autoResizeTextarea();
     }
 
-    connectSocket() {
-        this.socket = io();
-        
-        this.socket.on('connect', () => {
-            console.log('Connected to server');
-        });
 
-        this.socket.on('user-typing', (data) => {
-            // Handle typing indicators if needed
-        });
+
+    async checkServerHealth() {
+        try {
+            const response = await fetch('/health');
+            if (!response.ok) {
+                console.error('Server health check failed');
+                alert('Server is not responding. Please check if the server is running.');
+            } else {
+                console.log('Server health check passed');
+            }
+        } catch (error) {
+            console.error('Server health check error:', error);
+            alert('Cannot connect to server. Please check if the server is running on port 8000.');
+        }
     }
 
     bindEvents() {
@@ -155,6 +159,8 @@ class ChatbotApp {
             }
         } catch (error) {
             console.error('Error creating conversation:', error);
+            console.error('Error details:', error.message);
+            alert('Failed to create conversation. Please try again.');
         }
     }
 
@@ -169,10 +175,7 @@ class ChatbotApp {
                 this.renderMessages(data.messages);
                 this.updateActiveConversation(conversationId);
                 
-                // Join conversation room
-                if (this.socket) {
-                    this.socket.emit('join-conversation', conversationId);
-                }
+
             } else {
                 console.error('Failed to load conversation:', data.error);
             }
@@ -284,8 +287,13 @@ class ChatbotApp {
         const input = document.getElementById('message-input');
         const message = input.value.trim();
 
-        if (!message || !this.currentConversationId) {
+        if (!message) {
             return;
+        }
+
+        // If no conversation exists, create one first
+        if (!this.currentConversationId) {
+            await this.createNewConversation();
         }
 
         // Clear input
@@ -294,6 +302,8 @@ class ChatbotApp {
 
         // Add user message to UI
         this.addMessage('user', message);
+        
+        console.log('Sending message:', message, 'to conversation:', this.currentConversationId);
 
         // Show loading
         this.showLoading();
@@ -322,6 +332,7 @@ class ChatbotApp {
         } catch (error) {
             this.addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
             console.error('Error sending message:', error);
+            console.error('Error details:', error.message);
         } finally {
             this.hideLoading();
         }

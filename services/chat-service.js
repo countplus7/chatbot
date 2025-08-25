@@ -28,6 +28,14 @@ class ChatService {
 
   async createConversation(userId, title = 'New Conversation') {
     try {
+      // First, ensure the user exists
+      let user = await this.getUser(userId);
+      if (!user) {
+        // Create a default user if it doesn't exist
+        user = await this.createUser('default_user', 'default@example.com');
+        userId = user.id;
+      }
+      
       const result = await pool.query(
         'INSERT INTO conversations (user_id, title) VALUES ($1, $2) RETURNING *',
         [userId, title]
@@ -35,6 +43,8 @@ class ChatService {
       return result.rows[0];
     } catch (error) {
       console.error('Error creating conversation:', error);
+      console.error('Error details:', error.message);
+      console.error('Error code:', error.code);
       throw error;
     }
   }
@@ -142,6 +152,8 @@ class ChatService {
       return aiResponse;
     } catch (error) {
       console.error('Error processing text message:', error);
+      console.error('Error details:', error.message);
+      console.error('Error code:', error.code);
       throw error;
     }
   }

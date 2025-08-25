@@ -32,7 +32,15 @@ class OpenAIService {
       return response.choices[0].message.content;
     } catch (error) {
       console.error('Error in chat completion:', error);
-      throw new Error('Failed to get AI response');
+      console.error('Error details:', error.message);
+      console.error('Error code:', error.code);
+      if (error.code === 'invalid_api_key') {
+        throw new Error('Invalid OpenAI API key. Please check your configuration.');
+      } else if (error.code === 'insufficient_quota') {
+        throw new Error('OpenAI API quota exceeded. Please check your account.');
+      } else {
+        throw new Error(`Failed to get AI response: ${error.message}`);
+      }
     }
   }
 
